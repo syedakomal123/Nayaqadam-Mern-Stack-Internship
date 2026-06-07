@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickBites - Food Delivery</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--orange:#E8450A;--card-bg:#ffffff;--text:#1a1a1a;--muted:#6b7280;--border:#e5e7eb;--bg:#f9fafb;--bg2:#f3f4f6}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);display:flex;justify-content:center;min-height:100vh}
+  .app{width:100%;max-width:420px;background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
+  /* HEADER */
+  .header{background:var(--card-bg);padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+  .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--orange)}
+  .cart-btn{position:relative;background:var(--orange);border:none;border-radius:12px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .cart-btn i{color:#fff;font-size:18px}
+  .cart-badge{position:absolute;top:-4px;right:-4px;background:#1A0A00;color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif}
+  .location-row{display:flex;align-items:center;gap:6px}
+  .location-row i{color:var(--orange);font-size:16px}
+  .location-row span{font-size:13px;color:var(--muted)}
+  .location-row strong{font-size:13px;color:var(--text);font-weight:500}
+  /* SEARCH */
+  .search-bar{background:var(--bg2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;border:1px solid var(--border);margin:16px 20px 0}
+  .search-bar i{color:var(--muted);font-size:18px}
+  .search-bar input{background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);flex:1}
+  .search-bar input::placeholder{color:var(--muted)}
+  /* SCROLL */
+  .scroll-content{flex:1;overflow-y:auto;padding-bottom:80px}
+  /* SECTION */
+  .section{padding:20px 20px 0}
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
+  .see-all{font-size:12px;color:var(--orange);font-weight:500;cursor:pointer;background:none;border:none}
+  /* CATEGORIES */
+  .categories{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .categories::-webkit-scrollbar{display:none}
+  .cat-chip{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+  .cat-chip.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+  /* PROMO */
+  .promo-banner{margin:16px 20px 0;background:linear-gradient(125deg,#E8450A 0%,#FF8C42 100%);border-radius:18px;padding:20px;display:flex;justify-content:space-between;align-items:center;overflow:hidden;position:relative}
+  .promo-text h3{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;line-height:1.2}
+  .promo-text p{font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px}
+  .promo-btn{background:#fff;color:var(--orange);border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;flex-shrink:0}
+  .promo-decor{position:absolute;right:-10px;bottom:-10px;width:80px;height:80px;background:rgba(255,255,255,0.1);border-radius:50%}
+  /* RESTAURANTS */
+  .restaurants{display:flex;flex-direction:column;gap:14px}
+  .resto-card{background:var(--card-bg);border-radius:18px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.15s}
+  .resto-card:active{transform:scale(0.98)}
+  .resto-img-bg{width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:48px}
+  .resto-badge{position:absolute;top:10px;left:10px;background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:4px 8px;border-radius:6px;font-family:'Syne',sans-serif}
+  .resto-info{padding:14px}
+  .resto-info h4{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:4px}
+  .resto-meta{display:flex;gap:14px;align-items:center}
+  .meta-item{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+  .meta-item i{font-size:13px}
+  .meta-item.rating{color:#E8450A}
+  /* FOOD SCROLL */
+  .food-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+  .food-scroll::-webkit-scrollbar{display:none}
+  .food-card{flex-shrink:0;width:150px;background:var(--card-bg);border-radius:16px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.15s}
+  .food-card:active{transform:scale(0.97)}
+  .food-img{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:40px;background:var(--bg2)}
+  .food-info{padding:10px}
+  .food-info h5{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .food-price{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--orange)}
+  .add-btn{width:24px;height:24px;background:var(--orange);border:none;border-radius:6px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;line-height:1}
+  .food-info-row{display:flex;justify-content:space-between;align-items:center}
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--card-bg);border-top:1px solid var(--border);display:flex;padding:10px 0 16px;z-index:50}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0;border:none;background:none}
+  .nav-item i{font-size:22px;color:var(--muted)}
+  .nav-item span{font-size:10px;color:var(--muted);font-weight:500}
+  .nav-item.active i,.nav-item.active span{color:var(--orange)}
+  /* PAGE SYSTEM */
+  .page{display:none}
+  .page.active{display:block}
+  /* CART PAGE */
+  .order-page{padding:20px}
+  .page-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .back-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .back-btn i{font-size:18px;color:var(--text)}
+  .page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--text)}
+  /* BREADCRUMB */
+  .breadcrumb{display:flex;align-items:center;gap:6px;padding:10px 20px;background:var(--card-bg);border-bottom:1px solid var(--border);font-size:12px;color:var(--muted)}
+  .breadcrumb a{color:var(--orange);cursor:pointer;text-decoration:none;font-weight:500}
+  .breadcrumb i{font-size:12px}
+  /* ORDER ITEM */
+  .order-item{background:var(--card-bg);border-radius:16px;border:1px solid var(--border);padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:12px;cursor:pointer;transition:transform 0.15s}
+  .order-item:active{transform:scale(0.98)}
+  .order-emoji{font-size:32px;width:52px;height:52px;background:var(--bg2);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .order-details{flex:1}
+  .order-details h5{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+  .qty-ctrl{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .qty-btn{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:none;cursor:pointer;font-size:14px;color:var(--text);display:flex;align-items:center;justify-content:center}
+  .qty-val{font-size:13px;font-weight:500;color:var(--text);min-width:16px;text-align:center}
+  .checkout-bar{background:var(--orange);border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;cursor:pointer}
+  .checkout-bar span{color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+  .checkout-bar .price{background:rgba(0,0,0,0.2);border-radius:8px;padding:4px 10px;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:14px}
+  .empty-cart{text-align:center;padding:60px 20px;color:var(--muted)}
+  .empty-cart i{font-size:60px;margin-bottom:12px;display:block;color:var(--border)}
+  /* ITEM DETAIL PAGE */
+  .item-hero{width:100%;height:220px;display:flex;align-items:center;justify-content:center;font-size:90px;border-radius:20px;margin-bottom:20px}
+  .item-detail-card{background:var(--card-bg);border-radius:20px;border:1px solid var(--border);padding:20px;margin-bottom:16px}
+  .item-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);margin-bottom:6px}
+  .item-price-big{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--orange);margin-bottom:12px}
+  .item-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .tag{background:var(--bg2);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:500;color:var(--muted)}
+  .tag.spicy{background:#FFF0EB;color:#E8450A}
+  .tag.bestseller{background:#FFF8E0;color:#B45309}
+  .item-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+  .nutrition-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+  .nutri-item{background:var(--bg2);border-radius:10px;padding:10px 6px;text-align:center}
+  .nutri-val{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+  .nutri-label{font-size:10px;color:var(--muted);margin-top:2px}
+  .customise-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+  .customise-row:last-child{border-bottom:none}
+  .customise-label{font-size:14px;color:var(--text);font-weight:500}
+  .customise-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .radio-group{display:flex;gap:8px}
+  .radio-opt{padding:6px 12px;border-radius:8px;border:1px solid var(--border);font-size:12px;cursor:pointer;font-weight:500;color:var(--muted);transition:all 0.15s}
+  .radio-opt.selected{border-color:var(--orange);background:#FFF0EB;color:var(--orange)}
+  .add-to-cart-bar{background:var(--orange);border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px;cursor:pointer}
+  .add-to-cart-bar span{color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+  .qty-big{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.15);border-radius:10px;padding:4px 8px}
+  .qty-big button{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+  .qty-big span{color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;min-width:16px;text-align:center}
+  /* TRACKER */
+  .tracker{background:var(--card-bg);border-radius:18px;border:1px solid var(--border);padding:18px;margin-bottom:16px}
+  .tracker h4{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:14px;color:var(--text)}
+  .track-steps{display:flex;align-items:center}
+  .track-step{display:flex;flex-direction:column;align-items:center;flex:1}
+  .step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:6px}
+  .step-dot.done{background:var(--orange);color:#fff}
+  .step-dot.pending{background:var(--bg2);border:1px solid var(--border);color:var(--muted)}
+  .track-step span{font-size:10px;color:var(--muted);text-align:center}
+  .track-line{flex:1;height:2px;background:var(--border);margin-bottom:20px}
+  .track-line.done{background:var(--orange)}
+  /* PROFILE */
+  .profile-page{padding:20px}
+  .profile-card{background:var(--card-bg);border-radius:20px;border:1px solid var(--border);padding:20px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .avatar{width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .profile-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)}
+  .profile-card p{font-size:12px;color:var(--muted);margin-top:2px}
+  .menu-list{background:var(--card-bg);border-radius:16px;border:1px solid var(--border);overflow:hidden}
+  .menu-row{display:flex;align-items:center;padding:14px 16px;gap:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
+  .menu-row:hover{background:var(--bg2)}
+  .menu-row:last-child{border-bottom:none}
+  .menu-row i{font-size:18px;color:var(--orange)}
+  .menu-row span{flex:1;font-size:14px;color:var(--text)}
+  /* TOAST */
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A0A00;color:#fff;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:500;opacity:0;transition:all 0.3s;pointer-events:none;z-index:100;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* SUMMARY ROW */
+  .summary-card{background:var(--card-bg);border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:12px}
+  .summary-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding:5px 0}
+  .summary-row.total{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);border-top:1px solid var(--border);margin-top:6px;padding-top:10px}
+  /* SLIDE TRANSITION */
+  .page{animation:none}
+  .page.active{display:block}
+  .slide-in{animation:slideIn 0.25s ease}
+  @keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+  @media(min-width:421px){.app{box-shadow:0 0 40px rgba(0,0,0,0.1)}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- HEADER -->
+  <div class="header" id="mainHeader">
+    <div class="header-top">
+      <div class="logo">🍔 QuickBites</div>
+      <button class="cart-btn" onclick="navigate('/cart')">
+        <i class="ti ti-shopping-cart"></i>
+        <span class="cart-badge" id="cartCount">2</span>
+      </button>
+    </div>
+    <div class="location-row">
+      <i class="ti ti-map-pin"></i>
+      <span>Deliver to</span>
+      <strong>Clifton, Karachi ▾</strong>
+    </div>
+  </div>
+
+  <!-- SEARCH (only on home) -->
+  <div class="search-bar" id="searchBar">
+    <i class="ti ti-search"></i>
+    <input placeholder="Search restaurants or dishes..." />
+  </div>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb" id="breadcrumbBar" style="display:none"></div>
+
+  <!-- SCROLL CONTENT -->
+  <div class="scroll-content">
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <div class="promo-banner">
+        <div class="promo-text">
+          <h3>50% OFF<br>First Order!</h3>
+          <p>Use code QUICKFIRST</p>
+        </div>
+        <button class="promo-btn">Order Now</button>
+        <div class="promo-decor"></div>
+      </div>
+      <div class="section" style="margin-top:16px">
+        <div class="section-header"><span class="section-title">Categories</span></div>
+        <div class="categories">
+          <button class="cat-chip active" onclick="filterCat(this,'all')">🍽 All</button>
+          <button class="cat-chip" onclick="filterCat(this,'burger')">🍔 Burgers</button>
+          <button class="cat-chip" onclick="filterCat(this,'pizza')">🍕 Pizza</button>
+          <button class="cat-chip" onclick="filterCat(this,'biryani')">🍛 Biryani</button>
+          <button class="cat-chip" onclick="filterCat(this,'dessert')">🍩 Desserts</button>
+          <button class="cat-chip" onclick="filterCat(this,'drinks')">🧋 Drinks</button>
+        </div>
+      </div>
+      <div class="section" style="margin-top:16px">
+        <div class="section-header"><span class="section-title">Popular Near You</span><button class="see-all">See all</button></div>
+        <div class="restaurants" id="restaurantList">
+          <div class="resto-card" data-cat="biryani burger">
+            <div style="position:relative"><div class="resto-img-bg" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2)">🍛</div><span class="resto-badge">🔥 Popular</span></div>
+            <div class="resto-info"><h4>Karachi Biryani House</h4><div class="resto-meta"><span class="meta-item rating"><i class="ti ti-star-filled"></i> 4.8</span><span class="meta-item"><i class="ti ti-clock"></i> 25-35 min</span><span class="meta-item"><i class="ti ti-bike"></i> Rs 49</span></div></div>
+          </div>
+          <div class="resto-card" data-cat="burger">
+            <div style="position:relative"><div class="resto-img-bg" style="background:linear-gradient(135deg,#FFF8E1,#FFF3E0)">🍔</div><span class="resto-badge">⚡ Fast</span></div>
+            <div class="resto-info"><h4>BurgerZone Premium</h4><div class="resto-meta"><span class="meta-item rating"><i class="ti ti-star-filled"></i> 4.6</span><span class="meta-item"><i class="ti ti-clock"></i> 15-20 min</span><span class="meta-item"><i class="ti ti-bike"></i> Free</span></div></div>
+          </div>
+          <div class="resto-card" data-cat="pizza">
+            <div style="position:relative"><div class="resto-img-bg" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD0)">🍕</div></div>
+            <div class="resto-info"><h4>Pizza Palace Karachi</h4><div class="resto-meta"><span class="meta-item rating"><i class="ti ti-star-filled"></i> 4.5</span><span class="meta-item"><i class="ti ti-clock"></i> 30-40 min</span><span class="meta-item"><i class="ti ti-bike"></i> Rs 79</span></div></div>
+          </div>
+          <div class="resto-card" data-cat="dessert">
+            <div style="position:relative"><div class="resto-img-bg" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9)">🍩</div></div>
+            <div class="resto-info"><h4>Sweet Cravings Bakery</h4><div class="resto-meta"><span class="meta-item rating"><i class="ti ti-star-filled"></i> 4.7</span><span class="meta-item"><i class="ti ti-clock"></i> 20-30 min</span><span class="meta-item"><i class="ti ti-bike"></i> Rs 59</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="section" style="margin-top:20px;padding-bottom:20px">
+        <div class="section-header"><span class="section-title">Quick Bites</span><button class="see-all">See all</button></div>
+        <div class="food-scroll">
+          <div class="food-card" onclick="navigate('/item/zinger-burger')">
+            <div class="food-img">🍔</div><div class="food-info"><h5>Zinger Burger</h5><div class="food-info-row"><span class="food-price">Rs 450</span><button class="add-btn" onclick="event.stopPropagation();addToCart('zinger-burger')">+</button></div></div>
+          </div>
+          <div class="food-card" onclick="navigate('/item/chicken-biryani')">
+            <div class="food-img">🍛</div><div class="food-info"><h5>Chicken Biryani</h5><div class="food-info-row"><span class="food-price">Rs 320</span><button class="add-btn" onclick="event.stopPropagation();addToCart('chicken-biryani')">+</button></div></div>
+          </div>
+          <div class="food-card" onclick="navigate('/item/pepperoni-pizza')">
+            <div class="food-img">🍕</div><div class="food-info"><h5>Pepperoni Pizza</h5><div class="food-info-row"><span class="food-price">Rs 850</span><button class="add-btn" onclick="event.stopPropagation();addToCart('pepperoni-pizza')">+</button></div></div>
+          </div>
+          <div class="food-card" onclick="navigate('/item/gulab-jamun')">
+            <div class="food-img">🍩</div><div class="food-info"><h5>Gulab Jamun</h5><div class="food-info-row"><span class="food-price">Rs 150</span><button class="add-btn" onclick="event.stopPropagation();addToCart('gulab-jamun')">+</button></div></div>
+          </div>
+          <div class="food-card" onclick="navigate('/item/shawarma-roll')">
+            <div class="food-img">🌯</div><div class="food-info"><h5>Shawarma Roll</h5><div class="food-info-row"><span class="food-price">Rs 280</span><button class="add-btn" onclick="event.stopPropagation();addToCart('shawarma-roll')">+</button></div></div>
+          </div>
+          <div class="food-card" onclick="navigate('/item/doodh-patti')">
+            <div class="food-img">☕</div><div class="food-info"><h5>Doodh Patti</h5><div class="food-info-row"><span class="food-price">Rs 80</span><button class="add-btn" onclick="event.stopPropagation();addToCart('doodh-patti')">+</button></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CART PAGE -->
+    <div id="page-cart" class="page">
+      <div class="order-page">
+        <div class="page-header">
+          <button class="back-btn" onclick="navigate('/')"><i class="ti ti-arrow-left"></i></button>
+          <span class="page-title">My Cart 🛒</span>
+        </div>
+        <div class="tracker">
+          <h4>Last Order Status</h4>
+          <div class="track-steps">
+            <div class="track-step"><div class="step-dot done"><i class="ti ti-check" style="font-size:12px"></i></div><span>Confirmed</span></div>
+            <div class="track-line done"></div>
+            <div class="track-step"><div class="step-dot done">🍳</div><span>Preparing</span></div>
+            <div class="track-line"></div>
+            <div class="track-step"><div class="step-dot pending"><i class="ti ti-bike" style="font-size:12px"></i></div><span>On Way</span></div>
+            <div class="track-line"></div>
+            <div class="track-step"><div class="step-dot pending"><i class="ti ti-home" style="font-size:12px"></i></div><span>Delivered</span></div>
+          </div>
+        </div>
+        <div id="cartItems"></div>
+        <div id="emptyCart" class="empty-cart" style="display:none">
+          <i class="ti ti-shopping-cart"></i>
+          <p style="font-size:16px;font-weight:500;color:#1a1a1a">Cart is empty!</p>
+          <p style="font-size:13px;margin-top:4px">Add some delicious food</p>
+        </div>
+        <div id="cartSummary" style="display:none">
+          <div class="summary-card">
+            <div class="summary-row"><span>Subtotal</span><span id="subtotalAmt">Rs 0</span></div>
+            <div class="summary-row"><span>Delivery Fee</span><span>Rs 49</span></div>
+            <div class="summary-row"><span>Discount (QUICKFIRST)</span><span style="color:#16a34a">- Rs 50</span></div>
+            <div class="summary-row total"><span>Total</span><span id="totalAmt">Rs 0</span></div>
+          </div>
+        </div>
+        <div id="checkoutBar" class="checkout-bar" onclick="navigate('/checkout')">
+          <span>Proceed to Checkout</span>
+          <span class="price" id="totalPrice">Rs 0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEM DETAIL PAGE -->
+    <div id="page-item" class="page">
+      <div class="order-page" id="itemDetailContent"></div>
+    </div>
+
+    <!-- CHECKOUT PAGE -->
+    <div id="page-checkout" class="page">
+      <div class="order-page">
+        <div class="page-header">
+          <button class="back-btn" onclick="navigate('/cart')"><i class="ti ti-arrow-left"></i></button>
+          <span class="page-title">Checkout</span>
+        </div>
+        <div class="item-detail-card">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;color:var(--text)">Delivery Address</div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <i class="ti ti-map-pin" style="color:var(--orange);font-size:18px;margin-top:2px"></i>
+            <div>
+              <div style="font-size:14px;font-weight:500;color:var(--text)">Home</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px">Block 5, Clifton, Karachi, Sindh</div>
+              <div style="color:var(--orange);font-size:12px;font-weight:500;margin-top:6px;cursor:pointer">Change Address</div>
+            </div>
+          </div>
+        </div>
+        <div class="item-detail-card">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;color:var(--text)">Payment Method</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="radio" name="payment" checked style="accent-color:var(--orange)">
+              <span style="font-size:14px;color:var(--text)">💵 Cash on Delivery</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="radio" name="payment" style="accent-color:var(--orange)">
+              <span style="font-size:14px;color:var(--text)">💳 Credit / Debit Card</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="radio" name="payment" style="accent-color:var(--orange)">
+              <span style="font-size:14px;color:var(--text)">📱 JazzCash / EasyPaisa</span>
+            </label>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-row"><span>Subtotal</span><span id="co-subtotal">Rs 0</span></div>
+          <div class="summary-row"><span>Delivery Fee</span><span>Rs 49</span></div>
+          <div class="summary-row"><span>Discount</span><span style="color:#16a34a">- Rs 50</span></div>
+          <div class="summary-row total"><span>Total</span><span id="co-total">Rs 0</span></div>
+        </div>
+        <div class="checkout-bar" onclick="placeOrder()" style="margin-top:4px">
+          <span>Place Order 🎉</span>
+          <span class="price" id="co-total-btn">Rs 0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER SUCCESS PAGE -->
+    <div id="page-success" class="page">
+      <div class="order-page" style="text-align:center;padding-top:60px">
+        <div style="font-size:70px;margin-bottom:16px">🎉</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text);margin-bottom:8px">Order Placed!</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:6px">Your food is being prepared</div>
+        <div style="font-size:13px;color:var(--orange);font-weight:500;margin-bottom:32px">Estimated delivery: 30-40 min</div>
+        <div class="tracker" style="text-align:left">
+          <h4>Live Tracking</h4>
+          <div class="track-steps">
+            <div class="track-step"><div class="step-dot done"><i class="ti ti-check" style="font-size:12px"></i></div><span>Confirmed</span></div>
+            <div class="track-line done"></div>
+            <div class="track-step"><div class="step-dot done">🍳</div><span>Preparing</span></div>
+            <div class="track-line"></div>
+            <div class="track-step"><div class="step-dot pending"><i class="ti ti-bike" style="font-size:12px"></i></div><span>On Way</span></div>
+            <div class="track-line"></div>
+            <div class="track-step"><div class="step-dot pending"><i class="ti ti-home" style="font-size:12px"></i></div><span>Delivered</span></div>
+          </div>
+        </div>
+        <div class="checkout-bar" onclick="navigate('/')" style="margin-top:12px">
+          <span>Back to Home</span>
+          <i class="ti ti-home" style="color:#fff;font-size:18px"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="page">
+      <div class="profile-page">
+        <div class="page-header" style="margin-bottom:20px">
+          <span class="page-title">Profile</span>
+        </div>
+        <div class="profile-card">
+          <div class="avatar">AK</div>
+          <div><h3>Ahmed Khan</h3><p>ahmed.khan@gmail.com</p><p style="margin-top:2px;font-size:11px;color:#E8450A;font-weight:500">⭐ Gold Member</p></div>
+        </div>
+        <div class="menu-list">
+          <div class="menu-row"><i class="ti ti-package"></i><span>My Orders</span><i class="ti ti-chevron-right" style="color:var(--muted)"></i></div>
+          <div class="menu-row"><i class="ti ti-map-pin"></i><span>Saved Addresses</span><i class="ti ti-chevron-right" style="color:var(--muted)"></i></div>
+          <div class="menu-row"><i class="ti ti-credit-card"></i><span>Payment Methods</span><i class="ti ti-chevron-right" style="color:var(--muted)"></i></div>
+          <div class="menu-row"><i class="ti ti-heart"></i><span>Favourites</span><i class="ti ti-chevron-right" style="color:var(--muted)"></i></div>
+          <div class="menu-row"><i class="ti ti-star"></i><span>Ratings & Reviews</span><i class="ti ti-chevron-right" style="color:var(--muted)"></i></div>
+          <div class="menu-row"><i class="ti ti-help-circle"></i><span>Help & Support</span><i class="ti ti-chevron-right" style="color:var(--muted)"></i></div>
+          <div class="menu-row"><i class="ti ti-logout" style="color:#E8450A"></i><span style="color:#E8450A">Log Out</span><i class="ti ti-chevron-right" style="color:var(--muted)"></i></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end scroll-content -->
+
+  <nav class="bottom-nav">
+    <button class="nav-item" id="nav-home" onclick="navigate('/')"><i class="ti ti-home"></i><span>Home</span></button>
+    <button class="nav-item" id="nav-cart" onclick="navigate('/cart')"><i class="ti ti-shopping-cart"></i><span>Cart</span></button>
+    <button class="nav-item" id="nav-profile" onclick="navigate('/profile')"><i class="ti ti-user"></i><span>Profile</span></button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── MENU DATA ───────────────────────────────────────────────
+const MENU = {
+  'zinger-burger':    {id:'zinger-burger',name:'Zinger Burger',emoji:'🍔',price:450,cat:'Burgers',rating:4.8,time:'15 min',cal:520,protein:28,carbs:44,fat:22,spicy:true,bestseller:true,desc:'Crispy golden-fried chicken fillet marinated in our signature blend of spices, layered with fresh lettuce, juicy tomatoes, and zesty garlic mayo — all inside a toasted brioche bun.',bg:'#FFF3E0',options:{size:['Regular','Large','XL'],extras:['Extra Cheese','Extra Sauce','No Onions']}},
+  'chicken-biryani':  {id:'chicken-biryani',name:'Chicken Biryani',emoji:'🍛',price:320,cat:'Biryani',rating:4.9,time:'30 min',cal:680,protein:35,carbs:82,fat:18,spicy:true,bestseller:true,desc:'Slow-cooked Karachi-style dum biryani with tender bone-in chicken, fragrant basmati rice, caramelized onions, saffron strands, and a blend of 17 whole spices. Served with raita and salad.',bg:'#FFF8E1',options:{size:['Half','Full'],extras:['Extra Raita','Extra Salad','Extra Spicy']}},
+  'pepperoni-pizza':  {id:'pepperoni-pizza',name:'Pepperoni Pizza',emoji:'🍕',price:850,cat:'Pizza',rating:4.5,time:'35 min',cal:760,protein:32,carbs:88,fat:34,spicy:false,bestseller:false,desc:'Hand-tossed thin crust pizza loaded with premium pepperoni slices, melted mozzarella, tangy tomato sauce, and a sprinkle of oregano — baked in a wood-fire oven for that perfect char.',bg:'#FCE4EC',options:{size:['Small (8")','Medium (10")','Large (12")'],extras:['Extra Cheese','Jalapenos','Olives']}},
+  'gulab-jamun':      {id:'gulab-jamun',name:'Gulab Jamun',emoji:'🍩',price:150,cat:'Desserts',rating:4.7,time:'10 min',cal:310,protein:6,carbs:48,fat:10,spicy:false,bestseller:false,desc:'Soft milk-solid dumplings soaked in rose-scented sugar syrup, served warm with a garnish of crushed pistachios. A classic South Asian dessert that melts in your mouth.',bg:'#FFF0EB',options:{size:['2 pcs','4 pcs','6 pcs'],extras:['With Ice Cream','Extra Syrup']}},
+  'shawarma-roll':    {id:'shawarma-roll',name:'Shawarma Roll',emoji:'🌯',price:280,cat:'Wraps',rating:4.6,time:'20 min',cal:480,protein:24,carbs:52,fat:16,spicy:true,bestseller:false,desc:'Juicy slow-roasted chicken shawarma wrapped in a soft pita with garlic sauce, pickled veggies, fresh veggies and a drizzle of tahini. A Karachi street food classic.',bg:'#E8F5E9',options:{size:['Regular','Double Meat'],extras:['Extra Garlic Sauce','Extra Pickles','No Veggies']}},
+  'doodh-patti':      {id:'doodh-patti',name:'Doodh Patti',emoji:'☕',price:80,cat:'Drinks',rating:4.4,time:'5 min',cal:120,protein:5,carbs:14,fat:5,spicy:false,bestseller:false,desc:'Authentic Karachi-style milk tea brewed directly in full-fat milk with strong tea leaves, cardamom, and ginger. Rich, creamy, and the perfect chai experience.',bg:'#F3E5F5',options:{size:['Small','Regular','Large'],extras:['Extra Sugar','Less Sweet','No Cardamom']}},
+};
+
+// ─── CART STATE ───────────────────────────────────────────────
+let cart = [
+  {id:'chicken-biryani',qty:1,size:'Full',extras:[]},
+  {id:'zinger-burger',qty:1,size:'Regular',extras:[]}
+];
+let detailQty = 1;
+let selectedSize = {};
+let selectedExtras = {};
+
+// ─── ROUTER ───────────────────────────────────────────────────
+const routes = {
+  '/':        {page:'home',  nav:'home',    showSearch:true,  showBreadcrumb:false},
+  '/cart':    {page:'cart',  nav:'cart',    showSearch:false, showBreadcrumb:true},
+  '/item':    {page:'item',  nav:'home',    showSearch:false, showBreadcrumb:true},
+  '/checkout':{page:'checkout',nav:'cart', showSearch:false, showBreadcrumb:true},
+  '/success': {page:'success',nav:'cart',  showSearch:false, showBreadcrumb:false},
+  '/profile': {page:'profile',nav:'profile',showSearch:false,showBreadcrumb:false},
+};
+
+let currentPath = '/';
+let currentItemId = null;
+
+function navigate(path) {
+  currentPath = path;
+  window.location.hash = path;
+  render(path);
+}
+
+function render(path) {
+  // parse route
+  let routeKey = path;
+  let itemId = null;
+  if (path.startsWith('/item/')) {
+    routeKey = '/item';
+    itemId = path.replace('/item/', '');
+    currentItemId = itemId;
+  }
+
+  const route = routes[routeKey] || routes['/'];
+
+  // switch pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + route.page);
+  pageEl.classList.add('active', 'slide-in');
+  setTimeout(() => pageEl.classList.remove('slide-in'), 300);
+
+  // nav highlight
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + route.nav);
+  if(navEl) navEl.classList.add('active');
+
+  // search bar
+  document.getElementById('searchBar').style.display = route.showSearch ? 'flex' : 'none';
+
+  // breadcrumb
+  renderBreadcrumb(path, routeKey, itemId);
+
+  // page-specific renders
+  if (routeKey === '/cart') renderCart();
+  if (routeKey === '/item' && itemId) renderItemDetail(itemId);
+  if (routeKey === '/checkout') renderCheckout();
+}
+
+// ─── BREADCRUMB ───────────────────────────────────────────────
+function renderBreadcrumb(path, routeKey, itemId) {
+  const bar = document.getElementById('breadcrumbBar');
+  const crumbs = [{ label: '🏠 Home', path: '/' }];
+
+  if (routeKey === '/cart') {
+    crumbs.push({ label: 'Cart', path: null });
+  } else if (routeKey === '/item' && itemId) {
+    crumbs.push({ label: 'Menu', path: '/' });
+    const item = MENU[itemId];
+    if (item) crumbs.push({ label: item.name, path: null });
+  } else if (routeKey === '/checkout') {
+    crumbs.push({ label: 'Cart', path: '/cart' });
+    crumbs.push({ label: 'Checkout', path: null });
+  }
+
+  if (crumbs.length <= 1) { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+
+  bar.innerHTML = crumbs.map((c, i) => {
+    const isLast = i === crumbs.length - 1;
+    const sep = i > 0 ? '<i class="ti ti-chevron-right"></i>' : '';
+    if (isLast) return sep + `<span style="color:var(--text);font-weight:500">${c.label}</span>`;
+    return sep + `<a onclick="navigate('${c.path}')">${c.label}</a>`;
+  }).join('');
+}
+
+// ─── CART RENDER ──────────────────────────────────────────────
+function renderCart() {
+  const el = document.getElementById('cartItems');
+  const empty = document.getElementById('emptyCart');
+  const bar = document.getElementById('checkoutBar');
+  const summary = document.getElementById('cartSummary');
+
+  if (cart.length === 0) {
+    el.innerHTML = ''; empty.style.display = 'block';
+    bar.style.display = 'none'; summary.style.display = 'none'; return;
+  }
+  empty.style.display = 'none';
+  bar.style.display = 'flex';
+  summary.style.display = 'block';
+
+  let html = '';
+  cart.forEach((ci, i) => {
+    const item = MENU[ci.id];
+    if (!item) return;
+    const lineTotal = item.price * ci.qty;
+    html += `<div class="order-item" onclick="navigate('/item/${item.id}')">
+      <div class="order-emoji">${item.emoji}</div>
+      <div class="order-details" style="flex:1">
+        <h5>${item.name}</h5>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${ci.size}${ci.extras.length ? ' · ' + ci.extras.join(', ') : ''}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+          <div class="qty-ctrl" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+            <span class="qty-val">${ci.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+          </div>
+          <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);font-size:14px">Rs ${lineTotal}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  el.innerHTML = html;
+  const sub = cart.reduce((s, ci) => s + (MENU[ci.id]?.price || 0) * ci.qty, 0);
+  const total = sub + 49 - 50;
+  document.getElementById('subtotalAmt').textContent = 'Rs ' + sub;
+  document.getElementById('totalAmt').textContent = 'Rs ' + total;
+  document.getElementById('totalPrice').textContent = 'Rs ' + total;
+  updateCartBadge();
+}
+
+// ─── ITEM DETAIL ──────────────────────────────────────────────
+function renderItemDetail(id) {
+  const item = MENU[id];
+  if (!item) return;
+  detailQty = 1;
+  if (!selectedSize[id]) selectedSize[id] = item.options.size[0];
+
+  const existing = cart.find(c => c.id === id);
+  if (existing) detailQty = existing.qty;
+
+  document.getElementById('itemDetailContent').innerHTML = `
+    <div class="item-hero" style="background:${item.bg}">${item.emoji}</div>
+    <div class="item-detail-card">
+      <div class="item-tags">
+        ${item.spicy ? '<span class="tag spicy">🌶 Spicy</span>' : ''}
+        ${item.bestseller ? '<span class="tag bestseller">⭐ Bestseller</span>' : ''}
+        <span class="tag">${item.cat}</span>
+        <span class="tag"><i class="ti ti-clock" style="font-size:11px"></i> ${item.time}</span>
+      </div>
+      <div class="item-title">${item.name}</div>
+      <div class="item-price-big">Rs ${item.price}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">
+        <i class="ti ti-star-filled" style="color:#E8450A;font-size:14px"></i>
+        <span style="font-weight:500;font-size:13px">${item.rating}</span>
+        <span style="color:var(--muted);font-size:13px">· 200+ ratings</span>
+      </div>
+      <div class="item-desc">${item.desc}</div>
+      <div class="nutrition-grid">
+        <div class="nutri-item"><div class="nutri-val">${item.cal}</div><div class="nutri-label">Calories</div></div>
+        <div class="nutri-item"><div class="nutri-val">${item.protein}g</div><div class="nutri-label">Protein</div></div>
+        <div class="nutri-item"><div class="nutri-val">${item.carbs}g</div><div class="nutri-label">Carbs</div></div>
+        <div class="nutri-item"><div class="nutri-val">${item.fat}g</div><div class="nutri-label">Fat</div></div>
+      </div>
+    </div>
+
+    <div class="item-detail-card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;color:var(--text)">Choose Size</div>
+      <div class="customise-row" style="border:none;padding:0">
+        <div class="radio-group" id="sizeGroup">
+          ${item.options.size.map(s => `<div class="radio-opt${selectedSize[id]===s?' selected':''}" onclick="selectSize('${id}','${s}',this)">${s}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="item-detail-card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;color:var(--text)">Add Extras</div>
+      ${item.options.extras.map(e => `
+        <div class="customise-row">
+          <div>
+            <div class="customise-label">${e}</div>
+            <div class="customise-sub">+ Rs 50</div>
+          </div>
+          <input type="checkbox" style="accent-color:var(--orange);width:18px;height:18px;cursor:pointer" onchange="toggleExtra('${id}','${e}',this)">
+        </div>`).join('')}
+    </div>
+
+    <div class="add-to-cart-bar" onclick="addToCartFromDetail('${id}')">
+      <div class="qty-big">
+        <button onclick="event.stopPropagation();changeDetailQty(-1,'${id}')">−</button>
+        <span id="detailQtyDisplay">${detailQty}</span>
+        <button onclick="event.stopPropagation();changeDetailQty(1,'${id}')">+</button>
+      </div>
+      <span>${existing ? 'Update Cart' : 'Add to Cart'} · Rs <span id="detailTotal">${item.price * detailQty}</span></span>
+    </div>
+  `;
+}
+
+function selectSize(id, size, el) {
+  selectedSize[id] = size;
+  document.querySelectorAll('#sizeGroup .radio-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleExtra(id, extra, checkbox) {
+  if (!selectedExtras[id]) selectedExtras[id] = [];
+  if (checkbox.checked) { selectedExtras[id].push(extra); }
+  else { selectedExtras[id] = selectedExtras[id].filter(e => e !== extra); }
+}
+
+function changeDetailQty(d, id) {
+  detailQty = Math.max(1, detailQty + d);
+  const item = MENU[id];
+  document.getElementById('detailQtyDisplay').textContent = detailQty;
+  document.getElementById('detailTotal').textContent = item.price * detailQty;
+}
+
+function addToCartFromDetail(id) {
+  const item = MENU[id];
+  const existing = cart.find(c => c.id === id);
+  if (existing) {
+    existing.qty = detailQty;
+    existing.size = selectedSize[id] || item.options.size[0];
+    existing.extras = selectedExtras[id] || [];
+  } else {
+    cart.push({ id, qty: detailQty, size: selectedSize[id] || item.options.size[0], extras: selectedExtras[id] || [] });
+  }
+  updateCartBadge();
+  showToast(item.emoji + ' ' + item.name + ' added to cart!');
+  navigate('/cart');
+}
+
+// ─── CHECKOUT ────────────────────────────────────────────────
+function renderCheckout() {
+  const sub = cart.reduce((s, ci) => s + (MENU[ci.id]?.price || 0) * ci.qty, 0);
+  const total = sub + 49 - 50;
+  document.getElementById('co-subtotal').textContent = 'Rs ' + sub;
+  document.getElementById('co-total').textContent = 'Rs ' + total;
+  document.getElementById('co-total-btn').textContent = 'Rs ' + total;
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────
+function addToCart(id) {
+  const item = MENU[id];
+  const existing = cart.find(c => c.id === id);
+  if (existing) { existing.qty++; }
+  else { cart.push({ id, qty: 1, size: item.options.size[0], extras: [] }); }
+  updateCartBadge();
+  showToast(item.emoji + ' ' + item.name + ' added!');
+}
+
+function changeQty(i, d) {
+  cart[i].qty += d;
+  if (cart[i].qty <= 0) cart.splice(i, 1);
+  updateCartBadge();
+  renderCart();
+}
+
+function placeOrder() {
+  cart = [];
+  updateCartBadge();
+  navigate('/success');
+}
+
+function updateCartBadge() {
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cartCount').textContent = total;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function filterCat(btn, cat) {
+  document.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.resto-card').forEach(c => {
+    c.style.display = (cat === 'all' || (c.dataset.cat && c.dataset.cat.includes(cat))) ? 'block' : 'none';
+  });
+}
+
+// ─── HASH ROUTER (browser back/forward support) ───────────────
+window.addEventListener('hashchange', () => {
+  const path = window.location.hash.replace('#', '') || '/';
+  currentPath = path;
+  render(path);
+});
+
+// ─── INIT ─────────────────────────────────────────────────────
+const initPath = window.location.hash.replace('#', '') || '/';
+updateCartBadge();
+render(initPath);
+</script>
+</body>
+</html>
